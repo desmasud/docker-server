@@ -48,10 +48,16 @@ resource "aws_security_group" "docker-sg" {
 # Create ec2 instance
 resource "aws_instance" "docker-server" {
     subnet_id = aws_subnet.docker-subnet1.id
-  ami ="ami-052efd3df9dad4825"
+  ami ="ami-05fa00d4c63e32376"
   instance_type = "t2.micro"
   security_groups = [ aws_security_group.docker-sg.id ]
-
+user_data = <<EOF
+#!/bin/bash
+sudo yum update -y
+sudo amazon-linux-extras install docker -y
+sudo yum service docker start
+sudo usermod -a -G docker ec2-user
+ EOF
   tags = {
     "Name" = "docker-server"
   }
